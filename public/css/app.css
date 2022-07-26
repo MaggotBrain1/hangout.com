@@ -77,7 +77,7 @@ body {
 #ticketContainer{
     overflow: auto;
     width: 90%;
-    height: 400px;
+    height: 90%;
     border-radius: 8px;
 }
 
@@ -304,7 +304,7 @@ td,tr{
 
 
 thead{
-    background-image: url("../img/backgrounds/headTab.jpg");
+    background-image: url("../../../hangoutcom/public/img/headTab.jpg");
     background-position: center;
 }
 table{
