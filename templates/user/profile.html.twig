@@ -2,11 +2,6 @@
 
 {% block main %}
 
-    
-
-
-
-
     {{ form_start(editUserForm) }}
     {% if app.user.image != null %}
     <img src="{{ asset('photos/'~app.user.image)}}" alt="Photo de profil" height="200">
@@ -18,8 +13,6 @@
     </div>
 
     <div class="" >
-
-
         <div class="row">
             <div class="col-6">{{ form_label(editUserForm.pseudo) }} :</div>
             <div class="col-6">{{ form_row(editUserForm.pseudo) }}</div>

@@ -59,8 +59,7 @@ class HangoutController extends AbstractController
             $hangouts = $hangoutRepository->findByFilter($campus,$name,$startDate,$endDate,$imOrginizer,$imIn,$imNotIn,$pastHangout,$user);
         }else{
             $hangouts = $hangoutRepository->findHangoutAvaible();
-/*            $this->updateStatusOfHangouts($hangouts,$statusRepository,$em);*/
-            $this->updateStatusOfHangoutsV2($hangouts,$statusRepository,$em);
+            $this->updateStatusOfHangouts($hangouts,$statusRepository,$em);
         }
 
         return $this->render('hangout/hangoutList.html.twig', [
@@ -254,31 +253,6 @@ class HangoutController extends AbstractController
         ]);
     }
 
-    public function updateStatusOfHangouts($allHangouts, StatusRepository $statusRepository, EntityManagerInterface $em){
-
-        foreach ($allHangouts as $hg){
-            $startDate = $hg->getStartTime()->format('Y-m-d');
-            $today = date("Y-m-d");
-
-            if ($startDate == $today) {
-                $hg->setStatus($statusRepository->find(Status::STATUS_IN_PROGRESS));
-            }
-            if($today >= date('Y-m-d', strtotime($startDate. ' + 1 day')) &&
-                date('Y-m-d', strtotime($startDate. ' + 1 day')) <= date('Y-m-d', strtotime($startDate. ' + 1 month')) ){
-                $hg->setStatus($statusRepository->find(Status::STATUS_PAST));
-            }
-            if($today >= date('Y-m-d', strtotime($startDate. ' + 1 months')) ){
-                $hg->setStatus($statusRepository->find(Status::STATUS_ARCHIVED));
-
-            }
-            if($today >= $hg->getRegisterDateLimit()->format('Y-m-d')){
-                $hg->setStatus($statusRepository->find(Status::STATUS_CLOSED));
-            }
-            $em->persist($hg);
-            $em->flush();
-        }
-
-    }
     public function listOfPlaceCityAction(Request $request, PlaceRepository $placeRepository,EntityManagerInterface $em )
     {
 
@@ -342,8 +316,7 @@ class HangoutController extends AbstractController
         ]);
     }*/
 
-    public function updateStatusOfHangoutsV2($allHangouts, StatusRepository $statusRepository, EntityManagerInterface $em){
-
+    public function updateStatusOfHangouts($allHangouts, StatusRepository $statusRepository, EntityManagerInterface $em){
         foreach ($allHangouts as $hg){
             $hangoutClone = clone($hg);
             $startDate = $hg->getStartTime();
@@ -361,21 +334,16 @@ class HangoutController extends AbstractController
                 case ($startDate <= $now && $now < $endDate) :
                     if ($hg->getStatus()->getId() != Status::STATUS_IN_PROGRESS){
                         $hg->setStatus($statusRepository->find(Status::STATUS_IN_PROGRESS));
-                        echo "sortie en cours";
                     }
                     break;
                 case ($now > $endDate && $now < $oneMothMore ) :
                     if($hg->getStatus()->getId() != Status::STATUS_PAST){
                         $hg->setStatus($statusRepository->find(Status::STATUS_PAST));
-                        echo "sortie en passée";
                     }
                     break;
                 case ($now > $oneMothMore):
                     if ($hg->getStatus()->getId() != Status::STATUS_ARCHIVED) {
                         $hg->setStatus($statusRepository->find(Status::STATUS_ARCHIVED));
-                        echo "sortie en Archivée";
-                        dump("coucou on passe dans le jour est plus grans que la date + 1 moi");
-
                     }
                     break;
           }
@@ -384,7 +352,6 @@ class HangoutController extends AbstractController
                 $em->persist($hg);
                 $em->flush();
             }
-
         }
     }
 
